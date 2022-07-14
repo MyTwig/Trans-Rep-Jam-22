@@ -6,6 +6,7 @@ init python:
             self.inventory = []
             self.max_slots = max_slots
             self.used_slots = 0
+            self.remains = 0
 
         def check_for_item(self, item_name):
             #returns the first inventory item that matches and isn't full
@@ -23,37 +24,39 @@ init python:
             self.used_slots += 1
             return True
 
+        def add_existing_item(self, inventoryItem):
+            return self.add_item(inventoryItem.item_name, inventoryItem.amount, inventoryItem.stack_size)
+
         def add_item(self, item_name, amount=1, stack_size=1):
             #takes in a string and adds a new InventoryItem to the backpack. Returns True if success, False if backpack is full
             #check if you've grabbed more than one stack_size's worth of this item
-            remains = 0
             if self.used_slots == self.max_slots:
                 return False
             if (amount > stack_size):
-                remains = amount
-                while remains >= 0:
+                self.remains = amount
+                while self.remains >= 0:
                     slot = self.check_for_item(item_name)
                     if slot == None:
                         #We don't have a free slot in the inventory, so let's make one
-                        if remains > stack_size:
+                        if self.remains > stack_size:
                             result = self.add_item_slot(item_name, stack_size, stack_size)
                             if result == None:
                                 return False #The inventory is full, so we exit the function entirely
-                            remains -= stack_size
+                            self.remains -= stack_size
                         else:
-                            result = self.add_item_slot(item_name, remains, stack_size)
+                            result = self.add_item_slot(item_name, self.remains, stack_size)
                             if result == None:
                                 return False #The inventory is full, so we exit the function entirely
                             return True
                     else:
                         #There is a slot, let's see how much fits
-                        if stack_size - slot.amount >= remains:
+                        if stack_size - slot.amount >= self.remains:
                             #everything will fit
-                            slot.add_more(remains)
+                            slot.add_more(self.remains)
                             return True
                         else:
                             #Lets top off the stack then and see how much remains
-                            remains -= stack_size - slot.amount
+                            self.remains -= stack_size - slot.amount
                             slot.add_more(slot.stack_size - slot.amount) #Now it's filled up and remains is set accordingly
             else:
                 slot = self.check_for_item(item_name)
@@ -67,12 +70,15 @@ init python:
                         slot.add_more(amount)
                         return True
                     else:
-                        remains = amount - (slot.stack_size - slot.amount)
+                        self.remains = amount - (slot.stack_size - slot.amount)
                         slot.add_more(slot.stack_size - slot.amount)
-                        result = self.add_item_slot(item_name, remains, stack_size) #Add the leftover into a new stack
+                        result = self.add_item_slot(item_name, self.remains, stack_size) #Add the leftover into a new stack
                         if result == None:
                             return False #The inventory is full, so we exit the function entirely
                         return True
+
+        def clear_remains(self):
+            self.remains = 0
 
         def get_items_string(self):
             string = ""
@@ -104,26 +110,42 @@ init python:
                     return number_to_add - (self.stack_size - self.amount)
                 self.amount += number_to_add
 
+    class ScreenItem(InventoryItem):
 
-default screen_items = ['Bread', 'Calendar', 'Necklace']
+        def __init__(self, scene_x, scene_y, inventoryItem):
+            self.scene_x = scene_x
+            self.scene_y = scene_y
+            self.inventoryItem = inventoryItem
+        
+        def show_item(self):
+            #I'll set this up later to take in a list of variable conditions that must be met before this returns true
+            return True
+
+
+
+default screen_items = [('Bread', ScreenItem(150, 100, InventoryItem("Bread", 1, 3))), ('Calendar', ScreenItem(250, 500, InventoryItem("Calendar", 1, 1))), ('Necklace', ScreenItem(1200, 400, InventoryItem("Necklace", 1, 1)))]
 default backpack = Backpack()
 
 screen test_grab_screen():
 
     python:
-        
-        def show_item(name):
-            if name in store.screen_items:
-                return True
-            else:
-                return False
-        
+
         def get_item(drop, drags):
+            for itemTuple in screen_items:
+                if itemTuple[0] == drags[0].drag_name:
+                    item_tuple = itemTuple
             if not drop:
+                drags[0].snap(item_tuple[1].scene_x, item_tuple[1].scene_y, 0.1)
                 return
-            print(drags[0].drag_name)
-            screen_items.remove(drags[0].drag_name)
-            backpack.add_item(drags[0].drag_name)
+            else:
+                #The first element of the tuple is the item name, and the drag element is named after the item
+                itemFits = backpack.add_existing_item(item_tuple[1].inventoryItem) #Add the inventory item to the backpack from the ScreenItem and check if it fits
+                if itemFits:
+                    screen_items.remove(item_tuple) #We have picked up all of the items and should take it off the list
+                else:
+                    itemTuple[1].amount = backpack.remains #Set the amount left in the scene to what the backpack couldn't hold
+                    return Return(value=None) #Screen closes and value should be changed to reflect that the backpack is full now
+                    
             if screen_items == []:
                 return Return(value=None)
             else:
@@ -137,24 +159,14 @@ screen test_grab_screen():
             draggable False
             xpos 800 ypos 750
             dropped get_item
-        if show_item("Bread"):
-            drag:
-                drag_name "Bread"
-                child "bread.png"
-                droppable False
-                xpos 150 ypos 100
-        if show_item("Calendar"):
-            drag:
-                drag_name "Calendar"
-                child "calendar.png"
-                droppable False
-                xpos 250 ypos 500
-        if show_item("Necklace"):
-            drag:
-                drag_name "Necklace"
-                child "gem-necklace.png"
-                droppable False
-                xpos 1200 ypos 400
+        
+        for item in screen_items:
+            if item[1].show_item():
+                drag:
+                    drag_name item[0]
+                    child item[1].inventoryItem.item_name.lower() + ".png" #Ignore case as filenames are all lowercase so far
+                    droppable False
+                    xpos item[1].scene_x ypos item[1].scene_y
 
 
 label start:
