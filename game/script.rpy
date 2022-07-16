@@ -77,6 +77,9 @@ label diner:
 label mansionint:
 
     scene mansionint with dissolve
+
+    "Here will be the entry way to explore the house and discover its secrets..."
+
     $ renpy.pause()
     jump theend
 
