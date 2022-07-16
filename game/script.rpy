@@ -3,10 +3,10 @@
 label start:
 
     scene black
-    $ renpy.pause (1.5, hard=True)
-    show warning with Dissolve(2.5)
-    $ renpy.pause (5.0)
-    hide warning with Dissolve(2.5)
+    $ renpy.pause (1, hard=True)
+    show warning with Dissolve(1)
+    $ renpy.pause (1)
+    hide warning with Dissolve(1)
 
     jump car1
 
@@ -17,15 +17,20 @@ label start:
 label car1:
 
     scene car1 with dissolve
-    $ renpy.pause()
+
+    "Player wakes up on train and is spoken to by train employee."
+    window hide
+
     show trainemp1 with dissolve
 
     trainemp1 "Dialogue..."
     window hide
-
-    $ renpy.pause()
     hide trainemp1 with dissolve
+
+    "Player will be able to click on the door to enter Car 2"
+    window hide
     $ renpy.pause()
+
     jump car2
 
 ## Car Two
@@ -33,6 +38,9 @@ label car1:
 label car2:
 
     scene car2 with dissolve
+
+    "Player will be able to click on the door to enter the Dining Car"
+
     $ renpy.pause()
     jump diningcar
 
@@ -41,6 +49,10 @@ label car2:
 label diningcar:
 
     scene diningcar with dissolve
+
+    "Player will be able to click on the Train Employee to get something to eat,
+    or on Mystery Man to get some hints at how strange the town you're going is..."
+
     $ renpy.pause()
     jump diner
 
@@ -78,5 +90,11 @@ label theend:
     $ renpy.pause (3)
     hide theend with Dissolve (2.5)
     $ renpy.pause (2, hard=True)
+
+    #$ renpy.pause (2, hard=True)
+    #show theend with Dissolve(2)
+    #$ renpy.pause (3)
+    #hide theend with Dissolve (2.5)
+    #$ renpy.pause (2, hard=True)
 
     return
