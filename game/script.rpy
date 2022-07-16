@@ -65,6 +65,10 @@ label diningcar:
 label diner:
 
     scene diner with dissolve
+
+    "Here will be a cutscene where the main character reunites with Old Friend,
+    talks with Sheriff Tanaka, and is confronted by her old bullies."
+
     $ renpy.pause()
     jump mansionint
 
