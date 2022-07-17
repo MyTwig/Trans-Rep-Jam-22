@@ -29,9 +29,12 @@ label car1:
 
     "Player will be able to click on the door to enter Car 2"
     window hide
-    $ renpy.pause()
 
-    jump car2
+    menu:
+     "What should I do? (to be replaced by image buttons)"
+
+     "Enter Car 2.":
+         jump car2
 
 ## Car Two
 
@@ -41,8 +44,11 @@ label car2:
 
     "Player will be able to click on the door to enter the Dining Car"
 
-    $ renpy.pause()
-    jump diningcar
+    menu:
+        "What should I do? (to be replaced by image buttons)"
+
+        "Enter Dining Car.":
+            jump diningcar
 
 ## Dining Car
 
@@ -54,9 +60,28 @@ label diningcar:
     or on Mystery Man to get some hints at how strange the town you're going is..."
 
     $ renpy.pause()
-    jump diner
+    jump townext
 
 # SCENE TWO: Town Streets
+
+label townext:
+
+    scene townext with dissolve
+
+    "Here the Player will have the option of going to the Police Station, the Bar,
+    the Diner, or to head straight to the mansion."
+
+    menu:
+        "Where would you like to go?"
+
+        "Diner":
+            jump diner
+
+        "Bar":
+            jump bar
+
+        "Head to the Mansion":
+            jump mansionext
 
 # SCENE THREE: Diner
 
@@ -69,12 +94,40 @@ label diner:
     "Here will be a cutscene where the main character reunites with Old Friend,
     talks with Sheriff Tanaka, and is confronted by her old bullies."
 
-    $ renpy.pause()
-    jump mansionint
+    menu:
+        "What would you like to do? (to be replaced with image buttons)"
+
+        "Leave":
+            jump townext
 
 # SCENE FOUR: Bar
 
+label bar:
+
+    scene barint with dissolve
+
+    "Here will be a cutscene where the main protagonist reunites with her ex-girlfriend
+    who she hadn't spoken with for years."
+
+    menu:
+        "What would you like to do? (to be replaced with image buttons)"
+
+        "Leave":
+            jump townext
+
 # SCENE FIVE: Mansion
+
+## Mansion Exterior
+
+label mansionext:
+
+    scene mansionext with dissolve
+
+    "After a few lines of dialogue, the Player will be able to enter the mansion."
+
+    menu:
+        "Enter the Mansion":
+            jump mansionint
 
 ## Mansion Interior
 
