@@ -31,10 +31,10 @@ label car1:
     window hide
 
     menu:
-     "What should I do? (to be replaced by image buttons)"
+        "What should I do? (to be replaced by image buttons)"
 
-     "Enter Car 2.":
-         jump car2
+        "Enter Car 2.":
+            jump car2
 
 ## Car Two
 

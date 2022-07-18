@@ -95,10 +95,13 @@ init python:
 
     class InventoryItem(object):
 
-        def __init__(self, itemName, amount=1, stack_size=1):
+        """Base class for items in scenes, the backpack, and for use on the hotbar"""
+
+        def __init__(self, itemName, amount=1, stack_size=1, hotbar_item=False):
             self.item_name = itemName
             self.amount = amount
             self.stack_size = stack_size
+            self.hotbar_item = hotbar_item
 
         def add_more(self, number_to_add):
             #add items to the stack, returns number of items that couldn't be added by stack
