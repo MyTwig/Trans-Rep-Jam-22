@@ -1,3 +1,7 @@
+init:
+    $config.keymap['game_menu'].remove('mouseup_3') #Remove the right click bind from the game menu
+    $config.keymap['right_click'] = 'mouseup_3' #Make new right_click keymap and bind it to the right mouse button
+
 # HARD OPENING CREDITS
 
 label start:

@@ -3,11 +3,12 @@
 init python:
 
     class Backpack(object):
-        def __init__(self, max_slots=10):
+        def __init__(self, max_slots=10, grid_size=(5,2)):
             self.inventory = []
             self.max_slots = max_slots
             self.used_slots = 0
             self.remains = 0
+            self.grid_size = grid_size #Tuple of columns, rows for displaying inventory
 
         def check_for_item(self, item_name):
             #returns the first inventory item that matches and isn't full
@@ -97,11 +98,13 @@ init python:
 
         """Base class for items in scenes, the backpack, and for use on the hotbar"""
 
-        def __init__(self, itemName, amount=1, stack_size=1, hotbar_item=False):
+        def __init__(self, itemName, itemID=None, amount=1, stack_size=1, hotbar_item=False, description_text=""):
             self.item_name = itemName
             self.amount = amount
             self.stack_size = stack_size
             self.hotbar_item = hotbar_item
+            self.description = description_text
+            self.itemID = itemID
 
         def add_more(self, number_to_add):
             #add items to the stack, returns number of items that couldn't be added by stack
@@ -113,6 +116,9 @@ init python:
                     self.amount += self.stack_size - self.amount
                     return number_to_add - (self.stack_size - self.amount)
                 self.amount += number_to_add
+        
+        def set_description(description_text):
+            self.description = description_text
 
     class ScreenItem(InventoryItem):
 
